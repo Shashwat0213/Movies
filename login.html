@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHASWAT - Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#000;color:#fff;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;background:url('https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrpW.jpg') center/cover;filter:brightness(.35);z-index:-1}
+.bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#000 10%,rgba(0,0,0,.4),#000 95%)}
+header{padding:20px 4%;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:30px;font-weight:900;color:#E50914;letter-spacing:-1px}
+.logo span{color:#fff;font-size:11px;letter-spacing:3px;display:block;margin-top:-3px;font-weight:600}
+.back{color:#fff;text-decoration:none;font-size:14px;font-weight:600;border:1px solid #444;padding:8px 16px;border-radius:20px}
+.wrap{display:flex;justify-content:center;padding:20px 16px 60px}
+.card{background:rgba(10,10,10,.85);backdrop-filter:blur(20px);border:1px solid #2a2a2a;border-radius:20px;width:100%;max-width:440px;padding:32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.card h1{font-size:28px;font-weight:900}
+.card p.sub{color:#aaa;font-size:14px;margin:8px 0 22px;line-height:1.5}
+.tabs{display:flex;background:#1a1a1a;border-radius:12px;padding:4px;margin-bottom:20px}
+.tab{flex:1;text-align:center;padding:11px 6px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:#aaa}
+.tab.active{background:#fff;color:#000}
+label{font-size:13px;font-weight:600;color:#ddd;display:block;margin:14px 0 7px}
+input{width:100%;background:#141414;border:1px solid #333;color:#fff;padding:14px 15px;border-radius:11px;outline:none;font-size:15px}
+input:focus{border-color:#E50914}
+.phone-row{display:flex;gap:8px}
+.phone-row span{background:#1a1a1a;border:1px solid #333;padding:14px 12px;border-radius:11px;font-weight:700;font-size:14px}
+.btn{width:100%;padding:14px;border:none;border-radius:11px;font-weight:800;font-size:15px;cursor:pointer;margin-top:18px}
+.btn-red{background:#E50914;color:#fff}
+.btn-dark{background:#222;color:#fff;border:1px solid #333}
+.divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:#666;font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#2a2a2a}
+.btn-google{background:#fff;color:#000;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-google img{width:20px}
+.hint{font-size:12px;color:#888;text-align:center;margin-top:14px;line-height:1.5}
+.hint b{color:#fff}
+.footer{ text-align:center;color:#777;font-size:12px;padding:0 20px 30px}
+.hidden{display:none!important}
+.success{background:#0f3d1e;border:1px solid #1e7a3a;color:#7ee89a;padding:12px;border-radius:10px;font-size:13px;text-align:center;margin-bottom:14px}
+.error{background:#3d0f0f;border:1px solid #7a1e1e;color:#ff8a8a;padding:12px;border-radius:10px;font-size:13px;text-align:center;margin-bottom:14px}
+#recaptcha-container{margin-top:12px;display:flex;justify-content:center}
+.small-link{color:#aaa;font-size:13px;text-align:center;margin-top:14px;cursor:pointer}
+.small-link span{color:#fff;font-weight:700}
+@media(max-width:500px){.card{padding:24px 18px} header{padding:16px} .logo{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<header>
+  <div class="logo">SHASWAT<span>PREMIUM</span></div>
+  <a class="back" href="index.html">← Back to Home</a>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h1>Welcome back 👋</h1>
+    <p class="sub">Unlimited movies, shows & more. Sign in to continue your premium experience.</p>
+    <div id="msg"></div>
+    <div class="tabs">
+      <div class="tab active" id="tab-phone" onclick="switchTab('phone')">📱 Phone</div>
+      <div class="tab" id="tab-email" onclick="switchTab('email')">📧 Email</div>
+    </div>
+    <div id="phoneBox">
+      <label>Mobile Number</label>
+      <div class="phone-row">
+        <span>+91</span>
+        <input id="phone" placeholder="98765 43210" maxlength="10" inputmode="numeric">
+      </div>
+      <div id="recaptcha-container"></div>
+      <button class="btn btn-red" id="sendOtpBtn" onclick="sendOTP()">Send OTP →</button>
+      <div id="otpBox" class="hidden">
+        <label>Enter OTP (6 Digit)</label>
+        <input id="otp" placeholder="• • • • • •" maxlength="6" inputmode="numeric" style="text-align:center;font-size:20px;font-weight:800;letter-spacing:3px">
+        <button class="btn btn-red" onclick="verifyOTP()">Verify & Login</button>
+        <p class="hint">OTP nahi aaya? <b onclick="sendOTP()" style="cursor:pointer;color:#fff">Resend OTP</b></p>
+      </div>
+    </div>
+    <div id="emailBox" class="hidden">
+      <label>Full Name <span style="color:#888;font-weight:400">(Signup ke liye)</span></label>
+      <input id="name" placeholder="Shaswat Kumar">
+      <label>Email Address</label>
+      <input id="email" placeholder="you@example.com" type="email">
+      <label>Password</label>
+      <input id="pass" placeholder="••••••••" type="password">
+      <button class="btn btn-red" onclick="emailLogin()">Sign In</button>
+      <button class="btn btn-dark" onclick="emailSignup()">Create New Account</button>
+      <p class="small-link" onclick="forgotPass()">Password bhool gaye? <span>Reset karo</span></p>
+    </div>
+    <div class="divider">OR CONTINUE WITH</div>
+    <button class="btn btn-google" onclick="googleLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"> Continue with Google
+    </button>
+    <p class="hint">By continuing, you agree to our <b>Terms</b> & <b>Privacy Policy</b><br>© 2026 SHASWAT MOVIES • Made with ❤️ by Shaswat</p>
+  </div>
+</div>
+<p class="footer">Questions? Help Centre • Terms • Privacy • Contact Us</p>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBwk4Vc6naB025sMlPTjxIY_0zvRGqK2KQ",
+  authDomain: "movies-2a4d8.firebaseapp.com",
+  projectId: "movies-2a4d8",
+  storageBucket: "movies-2a4d8.firebasestorage.app",
+  messagingSenderId: "292644966395",
+  appId: "1:292644966395:web:73176ee456132e5dff055e"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+function showMsg(text, type){ document.getElementById('msg').innerHTML = `<div class="${type}">${text}</div>`; }
+function switchTab(type){
+  document.getElementById('tab-phone').classList.toggle('active', type==='phone');
+  document.getElementById('tab-email').classList.toggle('active', type==='email');
+  document.getElementById('phoneBox').classList.toggle('hidden', type!=='phone');
+  document.getElementById('emailBox').classList.toggle('hidden', type!=='email');
+}
+let confirmationResult = null;
+let recaptchaVerifier = null;
+function initRecaptcha(){
+  if(!recaptchaVerifier){
+    recaptchaVerifier = new firebase.auth.RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
+    recaptchaVerifier.render();
+  }
+}
+initRecaptcha();
+async function sendOTP(){
+  let phone = document.getElementById('phone').value.trim().replace(/\D/g,'');
+  if(phone.length !== 10) return showMsg('Sahi 10 digit ka mobile number daalo', 'error');
+  let fullPhone = '+91' + phone;
+  document.getElementById('sendOtpBtn').innerText = 'Sending OTP...';
+  try{
+    confirmationResult = await auth.signInWithPhoneNumber(fullPhone, recaptchaVerifier);
+    showMsg('OTP bhej diya gaya hai ' + fullPhone + ' par ✅', 'success');
+    document.getElementById('otpBox').classList.remove('hidden');
+    document.getElementById('sendOtpBtn').innerText = 'Resend OTP';
+    document.getElementById('otp').focus();
+  }catch(e){
+    showMsg(e.message, 'error');
+    document.getElementById('sendOtpBtn').innerText = 'Send OTP →';
+    if(recaptchaVerifier){ recaptchaVerifier.clear(); recaptchaVerifier=null; initRecaptcha(); }
+  }
+}
+async function verifyOTP(){
+  let code = document.getElementById('otp').value.trim();
+  if(code.length !== 6) return showMsg('6 digit ka OTP daalo', 'error');
+  try{
+    await confirmationResult.confirm(code);
+    showMsg('Login Successful! Home pe ja rahe ho... 🎉', 'success');
+    setTimeout(()=> window.location.href='index.html', 1000);
+  }catch(e){ showMsg('Galat OTP hai, dobara try karo', 'error'); }
+}
+async function emailSignup(){
+  let name=document.getElementById('name').value.trim();
+  let email=document.getElementById('email').value.trim();
+  let pass=document.getElementById('pass').value;
+  if(!email || pass.length<6) return showMsg('Email sahi daalo aur password kam se kam 6 character ka rakho', 'error');
+  try{
+    let cred = await auth.createUserWithEmailAndPassword(email, pass);
+    if(name) await cred.user.updateProfile({displayName:name});
+    showMsg('Account ban gaya! Welcome ❤️', 'success');
+    setTimeout(()=> window.location.href='index.html', 1000);
+  }catch(e){ showMsg(e.message, 'error'); }
+}
+async function emailLogin(){
+  let email=document.getElementById('email').value.trim();
+  let pass=document.getElementById('pass').value;
+  if(!email || !pass) return showMsg('Email aur Password dono daalo', 'error');
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    showMsg('Welcome back! Redirect ho rahe ho...', 'success');
+    setTimeout(()=> window.location.href='index.html', 1000);
+  }catch(e){ showMsg('Email ya Password galat hai', 'error'); }
+}
+async function forgotPass(){
+  let email=document.getElementById('email').value.trim();
+  if(!email) return showMsg('Pehle Email box me apna email daalo, phir Reset dabao', 'error');
+  try{ await auth.sendPasswordResetEmail(email); showMsg('Reset link email par bhej diya hai 📧', 'success'); }catch(e){ showMsg(e.message,'error'); }
+}
+async function googleLogin(){
+  try{
+    let provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+    showMsg('Google Login Successful! 🎉', 'success');
+    setTimeout(()=> window.location.href='index.html', 1000);
+  }catch(e){ showMsg(e.message, 'error'); }
+}
+// Agar pehle se login hai to turant home bhejo - Yahi wala fix tha
+auth.onAuthStateChanged((user)=>{
+  if(user && !sessionStorage.getItem('justLoggedOut')){
+    // Agar user login page pe aaya aur pehle se login hai, to home bhejo
+    // Lekin OTP flow ke liye 1 sec wait karne do, isliye sirf tab jab OTP box hidden hai
+    if(document.getElementById('otpBox').classList.contains('hidden') && !document.getElementById('msg').innerHTML.includes('OTP')){
+      // Direct redirect mat karo, user ko khud login karne do - isliye ye line comment me hai
+    }
+  }
+});
+</script>
+</body>
+</html>
