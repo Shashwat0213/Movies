@@ -13,16 +13,16 @@ button{padding:10px 18px;border:none;border-radius:20px;background:#e50914;color
 .card{background:#15151d;border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid #222}
 .card img{width:100%;height:260px;object-fit:cover}
 .card-info{padding:12px}
-.tabs{display:flex;gap:10px;padding:90px 5% 0;flex-wrap:wrap}
+.tabs{display:flex;gap:10px;padding:100px 5% 0;flex-wrap:wrap}
 .tab{padding:8px 16px;border-radius:20px;background:#1c1c1c;cursor:pointer}
 .tab.active{background:#e50914}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;justify-content:center;align-items:center}
-.modal-content{background:#1a1a1a;border-radius:16px;max-width:700px;width:95%;overflow:hidden}
-.auth-box{background:#1a1a1a;padding:20px;border-radius:12px;margin:20px 5%}
+.modal-content{background:#1a1a1a;border-radius:16px;max-width:700px;width:95%;overflow:hidden;max-height:90vh;overflow-y:auto}
+.auth-box{background:#1a1a1a;padding:20px;border-radius:12px;margin:20px 5%;display:flex;gap:10px;flex-wrap:wrap}
 </style></head>
 <body>
 <header><div class="logo">SHASWAT <span>MOVIES</span></div>
-<div><input id="search" placeholder="Search movie..."><button onclick="loadMovies()">Search</button>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="search" placeholder="Search movie..."><button onclick="loadMovies()">Search</button>
 <button onclick="showWatchlist()">My List</button>
 <span id="userInfo"></span>
 <button onclick="toggleAuth()">Login / Signup</button></div></header>
@@ -55,18 +55,20 @@ button{padding:10px 18px;border:none;border-radius:20px;background:#e50914;color
 <footer style="text-align:center;padding:20px;opacity:.6">© 2026 SHASWAT MOVIES • Powered by Shaswat</footer>
 
 <script>
-const API = "https://YOUR-BACKEND-URL.onrender.com"; // <-- Yaha Render ka URL dalna
+const API = "https://movies-m2tu.onrender.com";
 let currentId = null, currentCat = 'All';
 let token = localStorage.getItem('token');
 let user = JSON.parse(localStorage.getItem('user')||'null');
 if(user) document.getElementById('userInfo').innerText = "Hi, "+user.name;
 
 async function loadMovies(){
-  const q = document.getElementById('search').value;
-  const res = await fetch(`${API}/api/movies?search=${q}&category=${currentCat}`);
-  const data = await res.json();
-  document.getElementById('grid').innerHTML = data.map(m=>`
-  <div class="card" onclick="openModal(${m.id})"><img src="${m.img}"><div class="card-info"><h3>${m.name}</h3><p>${m.cat} • ${m.year}</p><b>⭐ ${m.rating}</b></div></div>`).join('') || "No movies found";
+  try{
+    const q = document.getElementById('search').value;
+    const res = await fetch(`${API}/api/movies?search=${q}&category=${currentCat}`);
+    const data = await res.json();
+    document.getElementById('grid').innerHTML = data.map(m=>`
+    <div class="card" onclick="openModal(${m.id})"><img src="${m.img}"><div class="card-info"><h3>${m.name}</h3><p>${m.cat} • ${m.year}</p><b>⭐ ${m.rating}</b></div></div>`).join('') || "No movies found";
+  }catch(e){ document.getElementById('grid').innerHTML = "Backend jag raha hai, 30 sec me refresh karo..."; }
 }
 function filterCat(cat,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
@@ -81,7 +83,7 @@ async function openModal(id){
   document.getElementById('modal').style.display='flex';
 }
 function closeModal(){document.getElementById('modal').style.display='none'; document.getElementById('mVideo').src='';}
-function toggleAuth(){document.getElementById('authBox').style.display = document.getElementById('authBox').style.display==='none'?'block':'none';}
+function toggleAuth(){let b=document.getElementById('authBox'); b.style.display = b.style.display==='none'?'flex':'none';}
 async function register(){
   const res = await fetch(`${API}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('name').value,email:document.getElementById('email').value,password:document.getElementById('pass').value})});
   const d = await res.json(); if(d.token){localStorage.setItem('token',d.token);localStorage.setItem('user',JSON.stringify(d.user));alert('Signup Success!');location.reload();} else alert(d.error);
