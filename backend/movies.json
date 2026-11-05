@@ -1,0 +1,8 @@
+[
+  {"id":1,"name":"Pushpa 2: The Rule","cat":"Action","year":2024,"rating":8.2,"img":"https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400","desc":"Pushpa Raj apne empire ko bachane ke liye wapas aata hai.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+  {"id":2,"name":"Jawan","cat":"Action","year":2023,"rating":8.0,"img":"https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400","desc":"Ek soldier ka double role aur desh ke liye jung.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+  {"id":3,"name":"3 Idiots","cat":"Comedy","year":2009,"rating":9.2,"img":"https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400","desc":"College life, dosti aur sapne.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+  {"id":4,"name":"Kalki 2898 AD","cat":"Thriller","year":2024,"rating":8.1,"img":"https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400","desc":"Future ki duniya me Kalki avatar.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+  {"id":5,"name":"Stree 2","cat":"Comedy","year":2024,"rating":8.5,"img":"https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400","desc":"Stree phir aa gayi! Horror comedy.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"},
+  {"id":6,"name":"Drishyam 2","cat":"Thriller","year":2022,"rating":8.6,"img":"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400","desc":"Vijay ki cleverness ka next level.","video":"https://www.youtube.com/embed/dQw4w9WgXcQ"}
+]
