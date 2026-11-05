@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shaswat Movies</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#0a0a0f;color:#fff}
+header{position:fixed;top:0;left:0;right:0;background:#0a0a0f;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;z-index:100;border-bottom:1px solid #222;flex-wrap:wrap;gap:10px}
+.logo{font-size:26px;font-weight:900;color:#e50914}
+.logo span{color:#fff;font-size:13px;font-weight:400}
+input{padding:10px 14px;border-radius:20px;border:1px solid #333;background:#1a1a1a;color:#fff;outline:none}
+button{padding:10px 18px;border:none;border-radius:20px;background:#e50914;color:#fff;cursor:pointer;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;padding:20px 5%}
+.card{background:#15151d;border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid #222}
+.card img{width:100%;height:260px;object-fit:cover}
+.card-info{padding:12px}
+.tabs{display:flex;gap:10px;padding:90px 5% 0;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:20px;background:#1c1c1c;cursor:pointer}
+.tab.active{background:#e50914}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;justify-content:center;align-items:center}
+.modal-content{background:#1a1a1a;border-radius:16px;max-width:700px;width:95%;overflow:hidden}
+.auth-box{background:#1a1a1a;padding:20px;border-radius:12px;margin:20px 5%}
+</style></head>
+<body>
+<header><div class="logo">SHASWAT <span>MOVIES</span></div>
+<div><input id="search" placeholder="Search movie..."><button onclick="loadMovies()">Search</button>
+<button onclick="showWatchlist()">My List</button>
+<span id="userInfo"></span>
+<button onclick="toggleAuth()">Login / Signup</button></div></header>
+
+<div class="tabs" id="tabs">
+<div class="tab active" onclick="filterCat('All',this)">All</div>
+<div class="tab" onclick="filterCat('Action',this)">Action</div>
+<div class="tab" onclick="filterCat('Comedy',this)">Comedy</div>
+<div class="tab" onclick="filterCat('Thriller',this)">Thriller</div>
+</div>
+
+<div class="auth-box" id="authBox" style="display:none">
+<input id="name" placeholder="Name (Signup ke liye)">
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="register()">Signup</button>
+<button onclick="login()">Login</button>
+</div>
+
+<div class="grid" id="grid">Loading...</div>
+
+<div class="modal" id="modal"><div class="modal-content">
+<img id="mImg" style="width:100%;height:280px;object-fit:cover">
+<div style="padding:20px"><h2 id="mTitle"></h2><p id="mDesc" style="opacity:.8;margin:10px 0"></p>
+<p>⭐ <span id="mRating"></span> | <span id="mYear"></span></p><br>
+<iframe id="mVideo" width="100%" height="250" frameborder="0" allowfullscreen></iframe><br><br>
+<button onclick="addToWatchlist()">+ My List Me Add</button>
+<button onclick="closeModal()" style="background:#333">Close</button></div></div></div>
+
+<footer style="text-align:center;padding:20px;opacity:.6">© 2026 SHASWAT MOVIES • Powered by Shaswat</footer>
+
+<script>
+const API = "https://YOUR-BACKEND-URL.onrender.com"; // <-- Yaha Render ka URL dalna
+let currentId = null, currentCat = 'All';
+let token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user')||'null');
+if(user) document.getElementById('userInfo').innerText = "Hi, "+user.name;
+
+async function loadMovies(){
+  const q = document.getElementById('search').value;
+  const res = await fetch(`${API}/api/movies?search=${q}&category=${currentCat}`);
+  const data = await res.json();
+  document.getElementById('grid').innerHTML = data.map(m=>`
+  <div class="card" onclick="openModal(${m.id})"><img src="${m.img}"><div class="card-info"><h3>${m.name}</h3><p>${m.cat} • ${m.year}</p><b>⭐ ${m.rating}</b></div></div>`).join('') || "No movies found";
+}
+function filterCat(cat,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  currentCat = cat; loadMovies();
+}
+async function openModal(id){
+  const res = await fetch(`${API}/api/movies/${id}`); const m = await res.json();
+  currentId = m.id;
+  document.getElementById('mImg').src=m.img; document.getElementById('mTitle').innerText=m.name;
+  document.getElementById('mDesc').innerText=m.desc; document.getElementById('mRating').innerText=m.rating;
+  document.getElementById('mYear').innerText=m.year; document.getElementById('mVideo').src=m.video;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'; document.getElementById('mVideo').src='';}
+function toggleAuth(){document.getElementById('authBox').style.display = document.getElementById('authBox').style.display==='none'?'block':'none';}
+async function register(){
+  const res = await fetch(`${API}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('name').value,email:document.getElementById('email').value,password:document.getElementById('pass').value})});
+  const d = await res.json(); if(d.token){localStorage.setItem('token',d.token);localStorage.setItem('user',JSON.stringify(d.user));alert('Signup Success!');location.reload();} else alert(d.error);
+}
+async function login(){
+  const res = await fetch(`${API}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('email').value,password:document.getElementById('pass').value})});
+  const d = await res.json(); if(d.token){localStorage.setItem('token',d.token);localStorage.setItem('user',JSON.stringify(d.user));alert('Login Success!');location.reload();} else alert(d.error);
+}
+async function addToWatchlist(){
+  if(!token) return alert('Pehle Login karo!');
+  await fetch(`${API}/api/watchlist/${currentId}`,{method:'POST',headers:{Authorization:'Bearer '+token}});
+  alert('Added to My List!');
+}
+async function showWatchlist(){
+  if(!token) return alert('Pehle Login karo!');
+  const res = await fetch(`${API}/api/watchlist`,{headers:{Authorization:'Bearer '+token}});
+  const data = await res.json();
+  document.getElementById('grid').innerHTML = data.map(m=>`<div class="card" onclick="openModal(${m.id})"><img src="${m.img}"><div class="card-info"><h3>${m.name}</h3></div></div>`).join('') || "Watchlist empty";
+}
+loadMovies();
+</script></body></html>
