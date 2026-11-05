@@ -88,4 +88,4 @@ app.post('/api/movies', auth, (req, res) => {
 app.get('/', (req, res) => res.send("Shaswat Movies Backend Running 🚀"));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server on ${PORT}`));
+app.listen(PORT, () => console.log(`Server on ${PORT}`)); 
